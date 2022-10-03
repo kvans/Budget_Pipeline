@@ -1,10 +1,9 @@
 import plaid
 from plaid.model.transactions_get_request_options import TransactionsGetRequestOptions
 from plaid.model.transactions_get_request import TransactionsGetRequest
-from datetime import datetime
+from datetime import datetime, timedelta
 from plaid.model.item_public_token_exchange_request import ItemPublicTokenExchangeRequest
 from plaid.model.transactions_sync_request import TransactionsSyncRequest
-
 import json
 from plaid.api import plaid_api
 import numpy as np
@@ -12,6 +11,8 @@ import pandas as pd
 import csv
 with open("config.json", 'r') as json_data:
     secrets = json.load(json_data)
+
+thirtyDaysAgo = datetime.now() - timedelta(30)
 
 configuration = plaid.Configuration(
     host=plaid.Environment.Development,
@@ -34,6 +35,10 @@ transactions = response['added']
 json_string = json.loads(json.dumps(response.to_dict(), default=str))
 df = pd.json_normalize(json_string, record_path=['added'])
 
+def RemoveOldRecords(df, daterange):
+    df['date']= pd.to_datetime(df['date'])
+    return df[df['date'] >= daterange]
+    
 ##Transactions in response can be thought of like a document. There are a certain number of transactions
 #on one doc then you have to move to the next.
 while (response['has_more']):
@@ -45,4 +50,8 @@ while (response['has_more']):
     transactions += response['added']
     json_string = json.loads(json.dumps(response.to_dict(), default=str))
     df = pd.concat([df,pd.json_normalize(json_string, record_path=['added'])])
+    df = RemoveOldRecords(df, thirtyDaysAgo)
 df.to_csv('test.csv',index=False)
+
+
+
