@@ -1,11 +1,8 @@
 import plaid
-from plaid.model.transactions_get_request_options import TransactionsGetRequestOptions
-from plaid.model.transactions_get_request import TransactionsGetRequest
 from datetime import datetime, timedelta
-from plaid.model.item_public_token_exchange_request import ItemPublicTokenExchangeRequest
 from plaid.model.transactions_sync_request import TransactionsSyncRequest
-import json
 from plaid.api import plaid_api
+import json
 import numpy as np
 import pandas as pd
 import csv
@@ -55,3 +52,21 @@ df.to_csv('test.csv',index=False)
 
 
 
+class Account:
+    def __init__(self, client):
+        self.client = client
+
+    def get_account_data(self):
+        request = AccountsGetRequest(
+            access_token=secrets['keys']['amex'],
+        )
+        return self.client.accounts_get(request)
+    
+    def to_csv(self):
+        response = self.get_account_data()
+        json_string = json.loads(json.dumps(response.to_dict(), default=str))
+        df = pd.concat([df,pd.json_normalize(json_string, record_path=['accounts'])])
+        df.to_csv('account.csv',index=False)
+        
+        
+        
