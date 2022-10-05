@@ -1,6 +1,7 @@
 import plaid
 from datetime import datetime, timedelta
 from plaid.model.transactions_sync_request import TransactionsSyncRequest
+from plaid.model.accounts_get_request import AccountsGetRequest
 from plaid.api import plaid_api
 import json
 import numpy as np
@@ -22,39 +23,10 @@ configuration = plaid.Configuration(
 api_client = plaid.ApiClient(configuration)
 client = plaid_api.PlaidApi(api_client)
 
-
-    
-request = TransactionsSyncRequest(
-    access_token=secrets['keys']['amex'],
-)
-response = client.transactions_sync(request)
-transactions = response['added']
-json_string = json.loads(json.dumps(response.to_dict(), default=str))
-df = pd.json_normalize(json_string, record_path=['added'])
-
-def RemoveOldRecords(df, daterange):
-    df['date']= pd.to_datetime(df['date'])
-    return df[df['date'] >= daterange]
-    
-##Transactions in response can be thought of like a document. There are a certain number of transactions
-#on one doc then you have to move to the next.
-while (response['has_more']):
-    request = TransactionsSyncRequest(
-        access_token=secrets['keys']['amex'],
-        cursor=response['next_cursor']
-    )
-    response = client.transactions_sync(request)
-    transactions += response['added']
-    json_string = json.loads(json.dumps(response.to_dict(), default=str))
-    df = pd.concat([df,pd.json_normalize(json_string, record_path=['added'])])
-    df = RemoveOldRecords(df, thirtyDaysAgo)
-df.to_csv('test.csv',index=False)
-
-
-
 class Account:
-    def __init__(self, client):
+    def __init__(self, client, companyToken):
         self.client = client
+        self.companyToken = companyToken
 
     def get_account_data(self):
         request = AccountsGetRequest(
@@ -65,8 +37,56 @@ class Account:
     def to_csv(self):
         response = self.get_account_data()
         json_string = json.loads(json.dumps(response.to_dict(), default=str))
-        df = pd.concat([df,pd.json_normalize(json_string, record_path=['accounts'])])
+        df = pd.json_normalize(json_string, record_path=['accounts'])
         df.to_csv('account.csv',index=False)
         
         
         
+class Transaction:
+    def __init__(self, client, companyToken, dateRange):
+        self.client = client
+        self.companyToken = companyToken
+        self.dateRange = dateRange
+        self.thirtyDaysAgo = datetime.now() - timedelta(30)
+
+    
+
+    def get_transaction_data(self):
+        request = TransactionsSyncRequest(
+            access_token=secrets['keys']['amex'],
+        )
+        return client.transactions_sync(request)
+
+    def loop_through_pages(self,response):
+
+        json_string = json.loads(json.dumps(response.to_dict(), default=str))
+        df = pd.json_normalize(json_string, record_path=['added'])
+
+        while (response['has_more']):
+            transactions = response['added']
+            request = TransactionsSyncRequest(
+                access_token=secrets['keys']['amex'],
+                cursor=response['next_cursor']
+            )
+            response = client.transactions_sync(request)
+            transactions += response['added']
+            json_string = json.loads(json.dumps(response.to_dict(), default=str))
+            df = pd.concat([df,pd.json_normalize(json_string, record_path=['added'])])
+
+        return df
+    
+    def to_csv(self):
+        response = self.get_transaction_data()
+        finalListOfTransactions = self.loop_through_pages(response)
+        finalListOfTransactions = self.RemoveOldRecords(finalListOfTransactions, thirtyDaysAgo)
+        finalListOfTransactions.to_csv('transactions.csv',index=False)
+
+    def RemoveOldRecords(self,df, dateRange):
+        df['date']= pd.to_datetime(df['date'])
+        return df[df['date'] >= dateRange]
+
+acc = Account(client, 'amex')
+acc.to_csv()
+
+trans = Transaction(client, 'amex',30)
+trans.to_csv()
