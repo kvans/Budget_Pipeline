@@ -10,7 +10,6 @@ import csv
 with open("config.json", 'r') as json_data:
     secrets = json.load(json_data)
 
-thirtyDaysAgo = datetime.now() - timedelta(30)
 
 configuration = plaid.Configuration(
     host=plaid.Environment.Development,
@@ -23,6 +22,9 @@ configuration = plaid.Configuration(
 api_client = plaid.ApiClient(configuration)
 client = plaid_api.PlaidApi(api_client)
 
+ ###
+ ### Pulls accounts associated to a bank/credit card company
+ ###    
 class Account:
     def __init__(self, client, companyToken):
         self.client = client
@@ -41,13 +43,15 @@ class Account:
         df.to_csv('account.csv',index=False)
         
         
-        
+ ###
+ ### Pulls all transactions for a specific account
+ ###       
 class Transaction:
     def __init__(self, client, companyToken, dateRange):
         self.client = client
         self.companyToken = companyToken
         self.dateRange = dateRange
-        self.thirtyDaysAgo = datetime.now() - timedelta(30)
+        self.x_days_ago = datetime.now() - timedelta(self.dateRange)
 
     
 
@@ -78,7 +82,7 @@ class Transaction:
     def to_csv(self):
         response = self.get_transaction_data()
         finalListOfTransactions = self.loop_through_pages(response)
-        finalListOfTransactions = self.RemoveOldRecords(finalListOfTransactions, thirtyDaysAgo)
+        finalListOfTransactions = self.RemoveOldRecords(finalListOfTransactions, self.x_days_ago)
         finalListOfTransactions.to_csv('transactions.csv',index=False)
 
     def RemoveOldRecords(self,df, dateRange):
