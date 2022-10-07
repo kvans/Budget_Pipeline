@@ -32,7 +32,7 @@ class Account:
 
     def get_account_data(self):
         request = AccountsGetRequest(
-            access_token=secrets['keys']['amex'],
+            access_token=secrets['keys'][self.companyToken],
         )
         return self.client.accounts_get(request)
     
@@ -47,17 +47,18 @@ class Account:
  ### Pulls all transactions for a specific account
  ###       
 class Transaction:
-    def __init__(self, client, companyToken, dateRange):
+    def __init__(self, client, companyToken, dateRange, accountkey):
         self.client = client
         self.companyToken = companyToken
         self.dateRange = dateRange
         self.x_days_ago = datetime.now() - timedelta(self.dateRange)
+        self.accountkey = accountkey
 
     
 
     def get_transaction_data(self):
         request = TransactionsSyncRequest(
-            access_token=secrets['keys']['amex'],
+            access_token=self.accountkey,
         )
         return client.transactions_sync(request)
 
@@ -92,5 +93,5 @@ class Transaction:
 acc = Account(client, 'amex')
 acc.to_csv()
 
-trans = Transaction(client, 'amex',30)
+trans = Transaction(client, 'amex',30,secrets['keys']['amex'])
 trans.to_csv()
