@@ -10,7 +10,6 @@ import csv
 with open("config.json", 'r') as json_data:
     secrets = json.load(json_data)
 
-
 configuration = plaid.Configuration(
     host=plaid.Environment.Development,
     api_key={
