@@ -10,16 +10,6 @@ import csv
 with open("config.json", 'r') as json_data:
     secrets = json.load(json_data)
 
-configuration = plaid.Configuration(
-    host=plaid.Environment.Development,
-    api_key={
-        'clientId': secrets['client_id'],
-        'secret': secrets['secret_id'],
-    }
-)
-
-api_client = plaid.ApiClient(configuration)
-client = plaid_api.PlaidApi(api_client)
 
  ###
  ### Pulls accounts associated to a bank/credit card company
@@ -59,7 +49,7 @@ class Transaction:
         request = TransactionsSyncRequest(
             access_token=self.accountkey,
         )
-        return client.transactions_sync(request)
+        return self.client.transactions_sync(request)
 
     def loop_through_pages(self,response):
 
@@ -72,7 +62,7 @@ class Transaction:
                 access_token=secrets['keys']['amex'],
                 cursor=response['next_cursor']
             )
-            response = client.transactions_sync(request)
+            response = self.client.transactions_sync(request)
             transactions += response['added']
             json_string = json.loads(json.dumps(response.to_dict(), default=str))
             df = pd.concat([df,pd.json_normalize(json_string, record_path=['added'])])
@@ -89,8 +79,3 @@ class Transaction:
         df['date']= pd.to_datetime(df['date'])
         return df[df['date'] >= dateRange]
 
-acc = Account(client, 'amex')
-acc.to_csv()
-
-trans = Transaction(client, 'amex',30,secrets['keys']['amex'])
-trans.to_csv()
