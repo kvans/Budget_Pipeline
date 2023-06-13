@@ -14,7 +14,6 @@ db = os.environ.get('POSTGRES_DB')
 with open("config.json", 'r') as json_data:
     secrets = json.load(json_data)
 
-print('JAJAJAJA')
 configuration = plaid.Configuration(
     host=plaid.Environment.Development,
     api_key={
@@ -25,7 +24,6 @@ configuration = plaid.Configuration(
 # Create a SQLAlchemy engine for easier insertion
 engine = create_engine(f"postgresql+psycopg2://{db_user}:{db_password}@{db_host}:{port}/{db}")
 
-print('YOOOO')
 
 def main():
     print("starting run")
@@ -36,6 +34,6 @@ def main():
     acc.to_csv()
     trans = Transaction(client, 'amex',11,secrets['keys']['amex'])
     trans.to_csv().to_sql('base_transactions', con=engine, if_exists='append', index=False)
-    
+    print('finished run')    
 if __name__ == '__main__':
     main()
