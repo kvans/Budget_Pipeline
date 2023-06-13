@@ -25,11 +25,13 @@ class Account:
         )
         return self.client.accounts_get(request)
     
-    def to_csv(self):
+    def to_transformed_dataframe(self):
         response = self.get_account_data()
         json_string = json.loads(json.dumps(response.to_dict(), default=str))
         df = pd.json_normalize(json_string, record_path=['accounts'])
-        df.to_csv('account.csv',index=False)
+        df['insertDate'] = datetime.today() 
+        return df 
+        #df.to_csv('account.csv',index=False)
         
         
  ###
@@ -69,7 +71,7 @@ class Transaction:
 
         return df
     
-    def to_csv(self):
+    def to_transformed_dataframe(self):
         response = self.get_transaction_data()
         finalListOfTransactions = self.loop_through_pages(response)
         finalListOfTransactions = self.RemoveOldRecords(finalListOfTransactions, self.x_days_ago)

@@ -31,12 +31,14 @@ def main():
     client = plaid_api.PlaidApi(api_client)
     
     for banks, access_key in secrets['keys'].items():
-
+        #too lazy to make this an upsert.
+        #Should only be an issue if you have tens of thousands of transactions your pulling daily
+        #This is not built for that kind of pull
         acc = Account(client, banks)
-        acc.to_csv()
+        acc.to_transformed_dataframe().to_sql('base_accounts', con=engine, if_exists='append', index=False)
         trans = Transaction(client, banks,11,access_key)
-        trans.to_csv().to_sql('base_transactions', con=engine, if_exists='append', index=False)
-    
+        trans.to_transformed_dataframe().to_sql('base_transactions', con=engine, if_exists='append', index=False)
+
     print('finished run')    
 
 
