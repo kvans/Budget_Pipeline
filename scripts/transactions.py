@@ -73,9 +73,11 @@ class Transaction:
         response = self.get_transaction_data()
         finalListOfTransactions = self.loop_through_pages(response)
         finalListOfTransactions = self.RemoveOldRecords(finalListOfTransactions, self.x_days_ago)
-        finalListOfTransactions.to_csv('transactions.csv',index=False)
+        finalListOfTransactions['insertDate'] = datetime.today()
+        #finalListOfTransactions.to_csv('transactions.csv',index=False)
+        return finalListOfTransactions
 
     def RemoveOldRecords(self,df, dateRange):
-        df['date']= pd.to_datetime(df['date'])
+        df['date'] = pd.to_datetime(df['date'])
         return df[df['date'] >= dateRange]
 

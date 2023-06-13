@@ -1,0 +1,37 @@
+version: '3'
+services:
+  budget-db:
+    image: postgres:latest
+    env_file:
+      - ./.env
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+  budget-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - budget-db
+    environment:
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    labels:
+      ofelia.enabled: "true"
+      ofelia.job-exec.datecron.schedule: "@every 30s"
+      ofelia.job-exec.datecron.command: "python main.py"
+  ##Job scheduler to use docker exec in containers. Made it simple to schedule budget-app main to run once a day
+  ofelia:
+    image: mcuadros/ofelia:latest
+    depends_on:
+      - budget-app
+    command: daemon --docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
