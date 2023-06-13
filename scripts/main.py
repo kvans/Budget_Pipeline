@@ -30,10 +30,17 @@ def main():
     api_client = plaid.ApiClient(configuration)
     client = plaid_api.PlaidApi(api_client)
     
-    acc = Account(client, 'amex')
-    acc.to_csv()
-    trans = Transaction(client, 'amex',11,secrets['keys']['amex'])
-    trans.to_csv().to_sql('base_transactions', con=engine, if_exists='append', index=False)
+    for banks, access_key in secrets['keys'].items():
+
+        acc = Account(client, banks)
+        acc.to_csv()
+        trans = Transaction(client, banks,11,access_key)
+        trans.to_csv().to_sql('base_transactions', con=engine, if_exists='append', index=False)
+    
     print('finished run')    
+
+
+
+
 if __name__ == '__main__':
     main()
