@@ -1,7 +1,7 @@
 pip==23.1.2
 pycodestyle==2.10.0
 requests==2.31.0
-setuptools==65.5.0
+setuptools==65.5.1
 psycopg2==2.9.6
 SQLAlchemy==2.0.16
 flask==2.3.2
