@@ -61,7 +61,7 @@ class Transaction:
         while (response['has_more']):
             transactions = response['added']
             request = TransactionsSyncRequest(
-                access_token=secrets['keys']['amex'],
+                access_token=secrets['keys'][self.companyToken],
                 cursor=response['next_cursor']
             )
             response = self.client.transactions_sync(request)

@@ -3,7 +3,9 @@ import json
 import plaid
 from plaid.api import plaid_api
 from sqlalchemy import create_engine
+from sqlalchemy.sql import text
 import os
+from plaid.model import item_get_request
 
 db_host = os.environ.get('POSTGRES_HOST')
 db_user = os.environ.get('POSTGRES_USER')
@@ -15,29 +17,47 @@ with open("config.json", 'r') as json_data:
     secrets = json.load(json_data)
 
 configuration = plaid.Configuration(
-    host=plaid.Environment.Development,
+    host=plaid.Environment.Production,
     api_key={
         'clientId': secrets['client_id'],
         'secret': secrets['secret_id'],
+        
     }
 )
-# Create a SQLAlchemy engine for easier insertion
-engine = create_engine(f"postgresql+psycopg2://{db_user}:{db_password}@{db_host}:{port}/{db}")
 
+##lazy way to do this but sort
+lst_sql_execs_in_order = ['staging__transactions','staging__accounts']
 
 def main():
     print("starting run")
     api_client = plaid.ApiClient(configuration)
     client = plaid_api.PlaidApi(api_client)
+    # Create a SQLAlchemy engine for easier insertion
     
+    engine = create_engine(f"postgresql+psycopg2://{db_user}:{db_password}@{db_host}:{port}/{db}")
+
     for banks, access_key in secrets['keys'].items():
+        
+
         #too lazy to make this an upsert.
         #Should only be an issue if you have tens of thousands of transactions your pulling daily
         #This is not built for that kind of pull
         acc = Account(client, banks)
         acc.to_transformed_dataframe().to_sql('base_accounts', con=engine, if_exists='append', index=False)
-        trans = Transaction(client, banks,11,access_key)
+        trans = Transaction(client, banks,30,access_key)
         trans.to_transformed_dataframe().to_sql('base_transactions', con=engine, if_exists='append', index=False)
+        ##
+        ##
+        ## create a sql script
+        ##
+        ##
+        with engine.begin() as connection:
+            for script in lst_sql_execs_in_order:
+                with open(f'{script}.sql', 'r') as file:  # Step 2: Read SQL file and execute statements
+                    statements = file.read()
+                    connection.execute(text(statements)
+                    )
+        engine.dispose()
 
     print('finished run')    
 
