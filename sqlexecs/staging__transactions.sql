@@ -23,11 +23,12 @@ CREATE TABLE IF NOT EXISTS staging__transactions (
 TRUNCATE TABLE staging__transactions;
 
 -- Create the new table based on a query
+
 with updated_account_infos as (SELECT t.account_id
                                     , sa.mask
-                                    , min(authorized_date) as starting_date
-                                    , max(authorized_date) as ending_date
-                               FROM staging__transactions t
+                                    , min(CAST(authorized_date as DATE)) as starting_date
+                                    , max(CAST(authorized_date as DATE)) as ending_date
+                               FROM base_transactions t
                                         INNER JOIN staging__accounts sa
                                                    ON sa.account_id = t.account_id
                                group by 1, 2

@@ -92,7 +92,7 @@
                         <td>{{ transaction[4] }}</td>
                         <td>{{ transaction[5] }}</td>
                         <td>
-                            <form method="post" action="/">
+                            <form method="post" action="/changeTransactions">
                                 <input type="hidden" name="transaction_id" value="{{ transaction[0] }}">
                                 <input type="date" name="date" value="{{ transaction[1] }}" style="display:none;">
                                 <input type="text" name="name" value="{{ transaction[2] }}" style="display:none;">

@@ -40,8 +40,8 @@ def update_transaction_true_value(transaction_id, date,name,category,subcategory
     conn.close()
 
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
+@app.route('/changeTransactions', methods=['GET', 'POST'])
+def changeTransactions():
     transactions = get_transactions()
     if request.method == 'POST':
         transaction_id = request.form['transaction_id']
@@ -51,8 +51,8 @@ def index():
         subcategory = request.form['subcategory']
         updated_price = request.form['updated_price']
         update_transaction_true_value(transaction_id,date, name, category, subcategory, updated_price)
-        return redirect('/')
-    return render_template('index.html', transactions=transactions)
+        return redirect('/changeTransactions')
+    return render_template('change_transactions.html', transactions=transactions)
 
 
 if __name__ == '__main__':
