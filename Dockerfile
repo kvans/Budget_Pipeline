@@ -11,7 +11,7 @@ COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY scripts/main.py scripts/transactions.py config.json /app/
+COPY scripts/main.py scripts/transactions.py config.json sqlexecs/* /app/
 
 # Need this docker container to stay up so that I can schedule it to run once a day with Ofelia. 
 # Thats why I used the tail command.

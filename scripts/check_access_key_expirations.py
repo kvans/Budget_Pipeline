@@ -19,7 +19,8 @@ api_client = plaid.ApiClient(configuration)
 client = plaid_api.PlaidApi(api_client)
 
 # Retrieve access token and expiration date
-#access_token =  # Replace with your actual access token
+#This script is kind of useless since it does not give a lot of info
+access_token = 'put in accurate access code' # Replace with your actual access token
 response = client.Item.get(access_token)
 expiration_date = response['item']['access_token_expiration_date']
 
