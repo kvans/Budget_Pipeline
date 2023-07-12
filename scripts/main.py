@@ -26,7 +26,7 @@ configuration = plaid.Configuration(
 )
 
 ##lazy way to do this but sort
-lst_sql_execs_in_order = ['staging__transactions','staging__accounts']
+lst_sql_execs_in_order = ['staging__transactions','staging__accounts','true_transaction','v_true_staging_transactions']
 
 def main():
     print("starting run")

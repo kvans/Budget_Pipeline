@@ -18,7 +18,7 @@ DB_PASSWORD = os.environ.get('POSTGRES_PASSWORD')
 def get_transactions():
     conn = psycopg2.connect(host=DB_HOST, database=DB_NAME, user=DB_USER, password=DB_PASSWORD)
     cursor = conn.cursor()
-    cursor.execute("SELECT transaction_id,date, name, category, subcategory, amount  FROM staging__transactions order by date desc")
+    cursor.execute("SELECT transaction_id,date, name, category, subcategory, amount  FROM v_true_staging_transactions order by date desc")
     transactions = cursor.fetchall()
     cursor.close()
     conn.close()

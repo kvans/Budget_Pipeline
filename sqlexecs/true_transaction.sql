@@ -4,5 +4,6 @@ CREATE TABLE IF NOT EXISTS true_transaction (
     name                   VARCHAR(255),
     category               VARCHAR(255),
     subcategory            VARCHAR(255),
-    actual_amount          NUMERIC(10, 2)
+    actual_amount          NUMERIC(10, 2),
+    insert_date            TIMESTAMP
 );

@@ -73,6 +73,5 @@ SELECT
     mask,
     max("insertDate") as insertdate
 from semi_structered_transactions
-WHERE authorized_date <= '2023-06-14'
 GROUP BY account_id, account_owner, amount, CAST(authorized_date as date), split_part(trim(both '{}' from category), ',', 1), split_part(trim(both '{}' from category), ',', 2), category_id, CAST(date as date), iso_currency_code, merchant_name, name, payment_channel, pending, pending_transaction_id, transaction_id, transaction_type, mask
 ORDER BY authorized_date desc
