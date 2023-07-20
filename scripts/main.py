@@ -26,7 +26,7 @@ configuration = plaid.Configuration(
 )
 
 ##lazy way to do this but sort
-lst_sql_execs_in_order = ['staging__transactions','staging__accounts','true_transaction','v_true_staging_transactions']
+lst_sql_execs_in_order = ['staging__transactions','staging__accounts','true_categories', 'true_transaction','v_true_staging_transactions']
 
 def main():
     print("starting run")
@@ -44,7 +44,7 @@ def main():
         #This is not built for that kind of pull
         acc = Account(client, banks)
         acc.to_transformed_dataframe().to_sql('base_accounts', con=engine, if_exists='append', index=False)
-        trans = Transaction(client, banks,30,access_key)
+        trans = Transaction(client, banks,60,access_key)
         trans.to_transformed_dataframe().to_sql('base_transactions', con=engine, if_exists='append', index=False)
         ##
         ##

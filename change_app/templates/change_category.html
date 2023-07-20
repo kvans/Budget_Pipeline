@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Category Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f8fa;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #1da1f2;
+            margin-bottom: 20px;
+        }
+
+        .transaction-list {
+            height: 400px;
+            overflow-y: scroll;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #1da1f2;
+            color: #ffffff;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f5f8fa;
+        }
+
+        form {
+            display: inline-block;
+        }
+
+        input[type="number"] {
+            width: 100px;
+            padding: 6px;
+            border: 1px solid #1da1f2;
+            border-radius: 4px;
+        }
+
+        button[type="submit"] {
+            padding: 6px 12px;
+            background-color: #1da1f2;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0c8bdc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Categories</h1>
+    <div class="category-list">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Subcategory</th>
+                    <th>Updated Category and Subcategory</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for category in categories %}
+                    <tr>
+                        <td>{{ category[0] }}</td>
+                        <td>{{ category[1] }}</td>
+                        <td>{{ category[2] }}</td>
+                        <td>{{ category[3] }}</td>
+                        <td>
+                            <form method="post" action="/changeCategory">
+                                <input type="date" name="date" value="{{ category[0] }}" style="display:none;">
+                                <input type="text" name="name" value="{{ category[1] }}" style="display:none;">
+                                <input type="text" name="category" value="{{ category[2] }}" style="display:none;">
+                                <input type="text" name="subcategory" value="{{ category[3] }}" style="display:none;">
+                                <input type="text" name="updatedCategory" placeholder="Updated Category">
+                                <input type="text" name="updatedSubcategory" placeholder="Updated Subcategory">
+                                <button type="submit">Update</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
