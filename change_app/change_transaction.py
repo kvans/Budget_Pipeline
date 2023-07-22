@@ -48,19 +48,33 @@ def update_transaction_true_value(transaction_id, date,name,category,subcategory
     conn.close()
 
 
-def update_category_true_value(name,category,subcategory, updatedCategory,updatedSubcategory):
+def update_category_true_value(name, category, subcategory, updatedCategory, updatedSubcategory):
     insert_date = datetime.datetime.now()
-    # Convert the updated price to a Decimal with two decimal places
 
     conn = psycopg2.connect(host=DB_HOST, database=DB_NAME, user=DB_USER, password=DB_PASSWORD)
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO true_category (name, category, subcategory,updatedCategory,updatedSubcategory, insert_date) "
-                   "VALUES (%s, %s, %s, %s, %s, %s)",
-                   (name, category, subcategory, updatedCategory, updatedSubcategory,insert_date))
+
+    # Check if the record with the same name, category, and subcategory combination already exists
+    # It essentially checks if a record exists with the same updatedCategory as the existing category.
+    cursor.execute("SELECT * FROM true_category WHERE name = %s AND updatedCategory = %s AND updatedSubcategory = %s",
+                (name, category, subcategory))
+    existing_record = cursor.fetchone()
+
+    if existing_record:
+        # Perform UPDATE if record with the same name, category, and subcategory combination exists
+        # We wont update category and subcategory because we wont these to retain the original values coming from plaid.
+        cursor.execute("UPDATE true_category SET updatedCategory = %s, updatedSubcategory = %s, insert_date = %s "
+                        "WHERE name = %s AND updatedCategory = %s AND updatedSubcategory = %s",
+                    (updatedCategory, updatedSubcategory, insert_date, name, category, subcategory))
+    else:
+        # Perform INSERT if record with the same name, category, and subcategory combination does not exist
+        cursor.execute("INSERT INTO true_category (name, category, subcategory, updatedCategory, updatedSubcategory, insert_date) "
+                        "VALUES (%s, %s, %s, %s, %s, %s)",
+                    (name, category, subcategory, updatedCategory, updatedSubcategory, insert_date))
+
     conn.commit()
     cursor.close()
     conn.close()
-
 
 @app.route('/changeTransactions', methods=['GET', 'POST'])
 def changeTransactions():
