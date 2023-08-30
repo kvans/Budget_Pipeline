@@ -58,8 +58,8 @@ SELECT
     amount,
     CAST(authorized_date as date) as authorized_date,
     --Wanted to split out categories to make it easier to query
-    split_part(trim(both '{}' from category), ',', 1) AS category,
-    split_part(trim(both '{}' from category), ',', 2) AS subcategory,
+    REPLACE(split_part(trim(both '{}' from category), ',', 1),'"','') AS category,
+    REPLACE(split_part(trim(both '{}' from category), ',', -1),'"','') AS subcategory,
     category_id,
     CAST(date as date) as date,
     iso_currency_code,
@@ -73,5 +73,5 @@ SELECT
     mask,
     max("insertDate") as insertdate
 from semi_structered_transactions
-GROUP BY account_id, account_owner, amount, CAST(authorized_date as date), split_part(trim(both '{}' from category), ',', 1), split_part(trim(both '{}' from category), ',', 2), category_id, CAST(date as date), iso_currency_code, merchant_name, name, payment_channel, pending, pending_transaction_id, transaction_id, transaction_type, mask
+GROUP BY account_id, account_owner, amount, CAST(authorized_date as date), 5,6, category_id, CAST(date as date), iso_currency_code, merchant_name, name, payment_channel, pending, pending_transaction_id, transaction_id, transaction_type, mask
 ORDER BY authorized_date desc

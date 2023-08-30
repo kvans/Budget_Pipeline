@@ -27,7 +27,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     labels:
       ofelia.enabled: "true"
-      ofelia.job-exec.datecron.schedule: "@every 200s"
+      ofelia.job-exec.datecron.schedule: "@every 200000s"
       ofelia.job-exec.datecron.command: "python main.py"
   ##Job scheduler to use docker exec in containers. Made it simple to schedule budget-app main to run once a day
   ofelia:

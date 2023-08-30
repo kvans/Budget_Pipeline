@@ -83,16 +83,17 @@
             <tbody>
                 {% for category in categories %}
                     <tr>
-                        <td>{{ category[0] }}</td>
                         <td>{{ category[1] }}</td>
                         <td>{{ category[2] }}</td>
                         <td>{{ category[3] }}</td>
+                        <td>{{ category[4] }}</td>
                         <td>
                             <form method="post" action="/changeCategory">
-                                <input type="date" name="date" value="{{ category[0] }}" style="display:none;">
-                                <input type="text" name="name" value="{{ category[1] }}" style="display:none;">
-                                <input type="text" name="category" value="{{ category[2] }}" style="display:none;">
-                                <input type="text" name="subcategory" value="{{ category[3] }}" style="display:none;">
+                                <input type="hidden" name="transaction_id" value="{{ category[0] }}">
+                                <input type="date" name="date" value="{{ category[1] }}" style="display:none;">
+                                <input type="text" name="name" value="{{ category[2] }}" style="display:none;">
+                                <input type="text" name="category" value="{{ category[3] }}" style="display:none;">
+                                <input type="text" name="subcategory" value="{{ category[4] }}" style="display:none;">
                                 <input type="text" name="updatedCategory" placeholder="Updated Category">
                                 <input type="text" name="updatedSubcategory" placeholder="Updated Subcategory">
                                 <button type="submit">Update</button>

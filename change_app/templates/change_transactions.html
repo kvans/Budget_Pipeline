@@ -79,7 +79,7 @@
                     <th>Category</th>
                     <th>Subcategory</th>
                     <th>Amount</th>
-                    <th>Update Amount</th>
+                    <th>Updates</th>
                 </tr>
             </thead>
             <tbody>
@@ -97,8 +97,9 @@
                                 <input type="date" name="date" value="{{ transaction[1] }}" style="display:none;">
                                 <input type="text" name="name" value="{{ transaction[2] }}" style="display:none;">
                                 <input type="text" name="category" value="{{ transaction[3] }}" style="display:none;">
-                                <input type="text" name="subcategory" value="{{ transaction[4] }}" style="display:none;">
-                                <input type="text" name="updated_price" placeholder="Updated Price">
+                                <input type="text" name="updated_category" placeholder="Updated Category">
+                                <input type="text" name="updated_subcategory" placeholder="Updated Subcategory">
+                                <input type="text" name="updated_price" placeholder="Updated Price" value="0.00">
                                 <button type="submit">Update</button>
                             </form>
                         </td>
